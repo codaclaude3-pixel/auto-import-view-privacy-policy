@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Privatlivspolitik · Auto Import View</title>
+    <meta name="description" content="Hvilke data Auto Import View browser-udvidelsen håndterer og hvorfor." />
+    <style>
+      body {
+        margin: 0;
+        background: #f8f8f5;
+        color: #0f172a;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.65;
+      }
+      .page { max-width: 760px; margin: 0 auto; padding: 60px 24px 80px; }
+      a { color: #2563eb; }
+      h1 { font-size: 36px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 8px; color: #0a2540; }
+      h2 { font-size: 22px; font-weight: 700; letter-spacing: -.01em; margin: 40px 0 10px; color: #0a2540; }
+      h3 { font-size: 16px; font-weight: 700; margin: 22px 0 6px; }
+      .meta { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+      .back { display: inline-block; margin-bottom: 30px; font-size: 14px; }
+      ul { padding-left: 22px; }
+      li { margin: 6px 0; }
+      .callout {
+        background: #eff6ff; border-left: 4px solid #3b82f6;
+        border-radius: 8px; padding: 14px 18px; margin: 20px 0;
+        font-size: 15px;
+      }
+      table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 14px; }
+      th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+      th { background: #f1f5f9; font-weight: 700; font-size: 13px; }
+      code { background: #f1f5f9; padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+      footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid #e5e7eb; font-size: 13px; color: #64748b; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <a href="/" class="back">← Tilbage til forsiden</a>
+      <h1>Privatlivspolitik</h1>
+      <div class="meta">Gælder for Auto Import View browser-udvidelsen og det tilhørende backend. Sidst opdateret: 17. maj 2026.</div>
+
+      <div class="callout">
+        <strong>Korte version:</strong> Vi gemmer hvilken bilannonce du har slået op på mobile.de og de tilhørende specs, så vi kan estimere registreringsafgiften for dig. Vi sender ingen personlige data, betalingsoplysninger eller e-mails. Vi har ingen anelse om hvem du er.
+      </div>
+
+      <h2>1. Hvilke data håndteres</h2>
+      <p>Når du bruger Auto Import View, håndterer udvidelsen følgende data:</p>
+
+      <table>
+        <thead><tr><th>Data</th><th>Hvor</th><th>Formål</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Den mobile.de-annonce du har åben (URL + bilens specs som annoncen viser: mærke, model, årgang, kilometertal, pris, brændstof, CO₂, m.m.)</td>
+            <td>Læses fra browser-fanen via vores content-script, sendes til vores backend (Railway, EU-Frankfurt)</td>
+            <td>Estimere dansk registreringsafgift og totalpris</td>
+          </tr>
+          <tr>
+            <td>En anonym installations-ID (<code>ext_…</code>)</td>
+            <td>Genereres af backend ved første brug, gemmes i din browsers <code>chrome.storage.local</code></td>
+            <td>Begrænse antal opslag pr. installation (20 gratis pr. dag) og forhindre misbrug</td>
+          </tr>
+          <tr>
+            <td>Cache af tidligere beregnede annoncer (annonce-ID, scrapede data, beregningsresultat)</td>
+            <td>Gemmes server-side i SQLite på vores Railway-backend</td>
+            <td>Genvise tidligere beregninger uden ny LLM-omkostning, og spare brugerens kvote</td>
+          </tr>
+          <tr>
+            <td>Tekniske requestdata (IP-adresse, tidsstempel, hvilket endpoint)</td>
+            <td>Logges på backend i op til 90 dage</td>
+            <td>Sikkerhed: opdage rate limit-misbrug, debugge fejl</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>2. Hvad vi IKKE indsamler</h2>
+      <ul>
+        <li>Vi indsamler ingen navne, e-mails, telefonnumre eller andre personoplysninger</li>
+        <li>Vi har ikke nogen login eller brugerkonto</li>
+        <li>Vi indsamler ikke betalingsoplysninger — udvidelsen er gratis</li>
+        <li>Vi tracker ikke din browser-aktivitet uden for mobile.de og motorstyrelsen.skat.dk</li>
+        <li>Vi har ingen reklame-trackere, analytics-pixels eller third-party cookies</li>
+        <li>Vi sælger og videregiver ikke data til tredjepart i marketing-øjemed</li>
+      </ul>
+
+      <h2>3. Hvem deler vi data med</h2>
+      <p>For hver friske annonce-beregning sendes en kort beskrivelse af bilen (mærke, model, variant, årgang, brændstof, HK, CO₂) til <strong>Anthropic</strong> (Claude AI) for at hente specs og prisestimater. Anthropic behandler dette som API-data og gemmer det ikke til træning. Detaljer: <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noreferrer">Anthropic's privatlivspolitik</a>.</p>
+
+      <p>Vi deler ingen data med øvrige tredjeparter.</p>
+
+      <h2>4. Hvor længe gemmes data</h2>
+      <ul>
+        <li><strong>Per-annonce cache:</strong> indtil du sletter den i admin-panelet — som standard ingen automatisk udløb</li>
+        <li><strong>Spec lookup-cache:</strong> 90 dage, hvorefter den nulstilles ved næste forespørgsel</li>
+        <li><strong>Request-log:</strong> 30 dage, derefter slettet</li>
+        <li><strong>Din installations-ID:</strong> indtil du afinstallerer udvidelsen eller rydder browser-data</li>
+      </ul>
+
+      <h2>5. Brug af motorstyrelsen.skat.dk</h2>
+      <p>Når du beder udvidelsen om at udregne den endelige registreringsafgift, åbner den en fane med <code>motorstyrelsen.skat.dk</code> og udfylder formularen automatisk med dine specs. Vi sender ingen data til Skat — de udfyldte felter går direkte i den åbne fane på din egen computer.</p>
+      <p>Resultatet (afgiften + fradrag) læses tilbage fra siden og vises i udvidelsens popup. Skat ser præcis det samme data som hvis du havde udfyldt formularen manuelt.</p>
+
+      <h2>6. Dine rettigheder (GDPR)</h2>
+      <p>Da vi ikke indsamler personoplysninger, har vi normalt ikke data der kan henføres til dig som person. Hvis du alligevel ønsker at:</p>
+      <ul>
+        <li><strong>Slette dine data:</strong> afinstaller udvidelsen — det fjerner din lokale installations-ID. Skriv til os hvis du vil have din server-side cache slettet.</li>
+        <li><strong>Få indsigt:</strong> kontakt os, så fremsender vi alt vi har gemt under din installations-ID.</li>
+        <li><strong>Klage:</strong> du har ret til at klage til Datatilsynet (<a href="https://www.datatilsynet.dk" target="_blank">datatilsynet.dk</a>).</li>
+      </ul>
+
+      <h2>7. Sikkerhed</h2>
+      <ul>
+        <li>Al kommunikation mellem udvidelse og backend foregår over HTTPS</li>
+        <li>Backend er hostet i EU (Railway Frankfurt-region) — ingen data forlader EU/EØS</li>
+        <li>Admin-panel er adgangskode-beskyttet</li>
+        <li>API-nøgler opbevares krypteret som hash på backend</li>
+      </ul>
+
+      <h2>8. Tilladelser udvidelsen anmoder om</h2>
+      <table>
+        <thead><tr><th>Tilladelse</th><th>Hvorfor</th></tr></thead>
+        <tbody>
+          <tr><td><code>storage</code></td><td>Gemme din installations-ID og dine seneste beregninger lokalt i browseren</td></tr>
+          <tr><td><code>tabs</code></td><td>Åbne en motorstyrelsen.skat.dk-fane når du beder om en officiel beregning</td></tr>
+          <tr><td><code>scripting</code></td><td>Læse data fra mobile.de-annoncesiden + udfylde formularen på motorstyrelsen.skat.dk</td></tr>
+          <tr><td><code>activeTab</code></td><td>Læse den fane du selv har åben — kun den fane, kun når du klikker på udvidelsen</td></tr>
+          <tr><td><code>debugger</code></td><td>Påkrævet for at kunne udfylde motorstyrelsen.skat.dk's formularer pålideligt (deres formular bruger non-standard event-handlers der ikke kan trigges af alm. content-scripts)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>9. Ændringer i denne politik</h2>
+      <p>Hvis vi ændrer denne politik, opdaterer vi datoen øverst på siden. Hvis ændringerne påvirker hvilke data vi indsamler, viser vi en besked i udvidelsens popup næste gang du åbner den.</p>
+
+      <h2>10. Kontakt</h2>
+      <p>Spørgsmål eller anmodninger om dine data: send en e-mail til <a href="mailto:privacy@importview.dk">privacy@importview.dk</a> (erstat dette med din egen rigtige e-mail før publikation).</p>
+
+      <footer>
+        © 2026 Auto Import View · <a href="/">Forside</a> · <a href="/admin">Admin</a>
+      </footer>
+    </main>
+  </body>
+</html>
