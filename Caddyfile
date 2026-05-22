@@ -1,0 +1,12 @@
+:8080 {
+  root * /app
+  file_server {
+    index index.html
+  }
+  
+  # Serve index.html for root path
+  rewrite / /index.html
+  
+  # Serve index.html for /admin path (if needed)
+  rewrite /admin /index.html
+}
